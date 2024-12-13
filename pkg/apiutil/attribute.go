@@ -16,6 +16,7 @@
 package apiutil
 
 import (
+	"encoding/base64"
 	"encoding/binary"
 	"errors"
 	"fmt"
@@ -51,6 +52,29 @@ func UnmarshalAttribute(an *apb.Any) (bgp.PathAttributeInterface, error) {
 			}
 		}
 		return bgp.NewPathAttributeNextHop(a.NextHop), nil
+	case *api.WireGuardPeerAttribute:
+		_, err = netip.ParseAddr(a.EndpointAddress)
+		if err != nil {
+			return nil, fmt.Errorf("invalid endpoint address: %s", a.EndpointAddress)
+		}
+
+		if a.EndpointPort > 0xffff {
+			return nil, fmt.Errorf("invalid endpoint port: %d", a.EndpointPort)
+		}
+
+		b, err := base64.StdEncoding.DecodeString(a.PublicKey)
+		if err != nil {
+			return nil, fmt.Errorf("invalid public key: %s", a.PublicKey)
+		}
+		if len(b) != 32 {
+			return nil, fmt.Errorf("invalid public key: not 32 bytes: %x", b)
+		}
+
+		if a.PersistentKeepalive > 0xffff {
+			return nil, fmt.Errorf("invalid persistent keepalive: %d", a.PersistentKeepalive)
+		}
+
+		return bgp.NewPathAttributeWireGuardPeer(a.EndpointAddress, a.EndpointPort, a.PublicKey, a.PersistentKeepalive), nil
 	case *api.MultiExitDiscAttribute:
 		return bgp.NewPathAttributeMultiExitDisc(a.Med), nil
 	case *api.LocalPrefAttribute:
@@ -325,6 +349,15 @@ func NewAsPathAttributeFromNative(a *bgp.PathAttributeAsPath) (*api.AsPathAttrib
 func NewNextHopAttributeFromNative(a *bgp.PathAttributeNextHop) (*api.NextHopAttribute, error) {
 	return &api.NextHopAttribute{
 		NextHop: a.Value.String(),
+	}, nil
+}
+
+func NewWireGuardPeerAttributeFromNative(a *bgp.PathAttributeWireGuardPeer) (*api.WireGuardPeerAttribute, error) {
+	return &api.WireGuardPeerAttribute{
+		EndpointAddress:     netip.AddrFrom16(a.Value.EndpointAddress).String(),
+		EndpointPort:        uint32(a.Value.EndpointPort),
+		PublicKey:           base64.StdEncoding.EncodeToString(a.Value.PublicKey[:]),
+		PersistentKeepalive: uint32(a.Value.PersistentKeepalive),
 	}, nil
 }
 
@@ -2398,6 +2431,14 @@ func MarshalPathAttributes(attrList []bgp.PathAttributeInterface) ([]*apb.Any, e
 			if err != nil {
 				return nil, err
 			}
+			n, _ := apb.New(v)
+			anyList = append(anyList, n)
+		case *bgp.PathAttributeWireGuardPeer:
+			v, err := NewWireGuardPeerAttributeFromNative(a)
+			if err != nil {
+				return nil, err
+			}
+
 			n, _ := apb.New(v)
 			anyList = append(anyList, n)
 		case *bgp.PathAttributeMultiExitDisc:

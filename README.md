@@ -1,5 +1,7 @@
 # GoBGP: BGP implementation in Go
 
+Forked from [osrg/gobgp](https://github.com/osrg/gobgp).
+
 [![Go Report Card](https://goreportcard.com/badge/github.com/osrg/gobgp)](https://goreportcard.com/report/github.com/osrg/gobgp)
 [![Tests](https://github.com/osrg/gobgp/actions/workflows/ci.yml/badge.svg)](https://github.com/osrg/gobgp/actions/workflows/ci.yml)
 [![Go Reference](https://pkg.go.dev/badge/github.com/osrg/gobgp/v3.svg)](https://pkg.go.dev/github.com/osrg/gobgp/v3)
@@ -11,6 +13,18 @@ modern environment and implemented in a modern programming language,
 [the Go Programming Language](http://golang.org/).
 
 ----
+
+## Features
+
+Compared to the upstream repository, this fork adds the following features. Common features and bug fixes will be attempted to be merged upstream, other features will be mantained within this repository.
+
+* Support Dynamic Multipoint WireGuard.
+
+## Releases
+
+Compared to the upstream repository, this fork will prepend "100" to release step number, starting from the second digit. 
+
+For example, a new release based on version `v3.32.0` from the upstream repository will be versioned as `v3.32.1000`, `v3.32.1100`, `v3.32.1200`, etc., in this fork.
 
 ## Install
 

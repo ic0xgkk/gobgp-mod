@@ -1,0 +1,11 @@
+syntax = "proto3";
+
+package apipb;
+option go_package = "github.com/osrg/gobgp/v3/api;apipb";
+
+message WireGuardPeerAttribute {
+  string endpoint_address = 1;
+  uint32 endpoint_port = 2;
+  string public_key = 3;
+  uint32 persistent_keepalive = 4;
+}

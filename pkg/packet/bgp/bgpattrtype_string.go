@@ -30,6 +30,7 @@ func _() {
 	_ = x[BGP_ATTR_TYPE_LS-29]
 	_ = x[BGP_ATTR_TYPE_LARGE_COMMUNITY-32]
 	_ = x[BGP_ATTR_TYPE_PREFIX_SID-40]
+	_ = x[BGP_ATTR_TYPE_WIREGUARD_PEER-81]
 }
 
 const (
@@ -40,6 +41,7 @@ const (
 	_BGPAttrType_name_4 = "BGP_ATTR_TYPE_LS"
 	_BGPAttrType_name_5 = "BGP_ATTR_TYPE_LARGE_COMMUNITY"
 	_BGPAttrType_name_6 = "BGP_ATTR_TYPE_PREFIX_SID"
+	_BGPAttrType_name_7 = "BGP_ATTR_TYPE_WIREGUARD_PEER"
 )
 
 var (
@@ -69,6 +71,8 @@ func (i BGPAttrType) String() string {
 		return _BGPAttrType_name_5
 	case i == 40:
 		return _BGPAttrType_name_6
+	case i == 81:
+		return _BGPAttrType_name_7
 	default:
 		return "BGPAttrType(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
