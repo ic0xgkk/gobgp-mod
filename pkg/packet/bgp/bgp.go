@@ -9805,6 +9805,8 @@ const (
 	BGP_ATTR_TYPE_LS                          // = 29
 	BGP_ATTR_TYPE_LARGE_COMMUNITY BGPAttrType = 32
 	BGP_ATTR_TYPE_PREFIX_SID      BGPAttrType = 40
+
+	BGP_ATTR_TYPE_WIREGUARD_PEER BGPAttrType = 81
 )
 
 // NOTIFICATION Error Code  RFC 4271 4.5.
@@ -10000,6 +10002,8 @@ var PathAttrFlags map[BGPAttrType]BGPAttrFlag = map[BGPAttrType]BGPAttrFlag{
 	BGP_ATTR_TYPE_LARGE_COMMUNITY:          BGP_ATTR_FLAG_TRANSITIVE | BGP_ATTR_FLAG_OPTIONAL,
 	BGP_ATTR_TYPE_LS:                       BGP_ATTR_FLAG_OPTIONAL,
 	BGP_ATTR_TYPE_PREFIX_SID:               BGP_ATTR_FLAG_TRANSITIVE | BGP_ATTR_FLAG_OPTIONAL,
+
+	BGP_ATTR_TYPE_WIREGUARD_PEER: BGP_ATTR_FLAG_TRANSITIVE | BGP_ATTR_FLAG_OPTIONAL,
 }
 
 // getPathAttrFlags returns BGP Path Attribute flags value from its type and
@@ -14378,6 +14382,8 @@ func GetPathAttribute(data []byte) (PathAttributeInterface, error) {
 		return &PathAttributeLs{}, nil
 	case BGP_ATTR_TYPE_PREFIX_SID:
 		return &PathAttributePrefixSID{}, nil
+	case BGP_ATTR_TYPE_WIREGUARD_PEER:
+		return &PathAttributeWireGuardPeer{}, nil
 	}
 	return &PathAttributeUnknown{}, nil
 }
@@ -14885,6 +14891,8 @@ func getErrorHandlingFromPathAttribute(t BGPAttrType) ErrorHandling {
 		return ERROR_HANDLING_ATTRIBUTE_DISCARD
 	case BGP_ATTR_TYPE_AIGP:
 		return ERROR_HANDLING_ATTRIBUTE_DISCARD
+	case BGP_ATTR_TYPE_WIREGUARD_PEER:
+		return ERROR_HANDLING_TREAT_AS_WITHDRAW
 	default:
 		return ERROR_HANDLING_ATTRIBUTE_DISCARD
 	}
